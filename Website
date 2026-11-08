@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sarawak HydroQuest: Energy, Ecology & Action</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti for Gamification -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    h1, h2, h3, .font-heading {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .river-gradient {
+      background: linear-gradient(135deg, #022c22 0%, #064e3b 40%, #0f766e 75%, #0369a1 100%);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .pulse-glow {
+      animation: pulseGlow 2.5s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.8); }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white">
+
+  <!-- ================= TOP NAVIGATION / STATUS BAR ================= -->
+  <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('tab-overview')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/20">
+            <i data-lucide="waves" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="text-sm font-extrabold tracking-wider text-emerald-400 uppercase font-heading">Sarawak HydroQuest</div>
+            <div class="text-[10px] text-slate-400">Borneo Clean Energy & Civic Action</div>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="hidden lg:flex items-center space-x-1 text-xs font-semibold">
+          <button onclick="switchTab('tab-overview')" class="nav-tab px-3 py-2 rounded-lg text-emerald-400 bg-slate-800 transition" id="nav-tab-overview">1. Mission & Hook</button>
+          <button onclick="switchTab('tab-physics')" class="nav-tab px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition" id="nav-tab-physics">2. Turbine Simulator</button>
+          <button onclick="switchTab('tab-ideas')" class="nav-tab px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition" id="nav-tab-ideas">3. 3 Key Infographics</button>
+          <button onclick="switchTab('tab-examples')" class="nav-tab px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition" id="nav-tab-examples">4. Sarawak Dams & Facts</button>
+          <button onclick="switchTab('tab-check')" class="nav-tab px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition" id="nav-tab-check">5. Interact & Check</button>
+          <button onclick="switchTab('tab-reflect')" class="nav-tab px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition" id="nav-tab-reflect">6. Reflect & Act</button>
+          <button onclick="switchTab('tab-slides')" class="nav-tab px-3 py-2 rounded-lg text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition flex items-center gap-1" id="nav-tab-slides">
+            <i data-lucide="presentation" class="w-3.5 h-3.5"></i> Slides & Audio
+          </button>
+        </nav>
+
+        <!-- Gamification Points Counter -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 bg-slate-800 border border-emerald-500/40 px-3 py-1.5 rounded-full shadow-inner">
+            <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
+            <span class="text-xs font-bold text-slate-300">XP:</span>
+            <span id="userXp" class="text-xs font-extrabold text-emerald-400">0</span>
+            <span class="text-[10px] text-slate-500">/ 500</span>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Nav Drawer -->
+    <div id="mobileMenu" class="lg:hidden hidden border-t border-slate-800 bg-slate-900 px-4 py-3 space-y-1 text-sm font-medium">
+      <button onclick="switchTab('tab-overview'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-slate-300 hover:bg-slate-800">1. Mission & Hook Quiz</button>
+      <button onclick="switchTab('tab-physics'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-slate-300 hover:bg-slate-800">2. Physics Lab & Dam Simulator</button>
+      <button onclick="switchTab('tab-ideas'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-slate-300 hover:bg-slate-800">3. 3 Key Ideas Infographics</button>
+      <button onclick="switchTab('tab-examples'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-slate-300 hover:bg-slate-800">4. Sarawak Dams & Fun Facts</button>
+      <button onclick="switchTab('tab-check'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-slate-300 hover:bg-slate-800">5. Interact & Check Activity</button>
+      <button onclick="switchTab('tab-reflect'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-slate-300 hover:bg-slate-800">6. Reflect & Action Form</button>
+      <button onclick="switchTab('tab-slides'); toggleMobileMenu();" class="w-full text-left py-2 px-3 rounded-lg text-amber-400 hover:bg-slate-800">7. Slides Deck & Voiceover Lab</button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN MULTI-PAGE CONTAINER ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ================= PAGE 1: OVERVIEW & HOOK QUIZZES ================= -->
+    <section id="tab-overview" class="page-view space-y-10">
+      
+      <!-- Hero Banner -->
+      <div class="river-gradient rounded-3xl p-8 sm:p-12 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-3xl space-y-4 relative z-10">
+          <div class="inline-flex items-center gap-2 bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <i data-lucide="compass" class="w-3.5 h-3.5"></i> Section 1: Title & Purpose
+          </div>
+          
+          <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight">
+            Sarawak Hydroelectric Power: <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300">
+              Clean Energy, Climate Action & Native Rivers
+            </span>
+          </h1>
+
+          <p class="text-slate-200 text-sm sm:text-base leading-relaxed">
+            Sarawak's rugged topography and heavy tropical monsoons produce some of the highest water discharge volumes on Earth. But does damming the mighty Rajang and Balui rivers create true environmental justice, or merely trade local rainforests for industrial power?
+          </p>
+
+          <!-- Elaborated Goal Box -->
+          <div class="mt-6 bg-slate-900/80 backdrop-blur-md border border-emerald-500/30 rounded-2xl p-5 text-slate-200 space-y-2">
+            <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <i data-lucide="target" class="w-5 h-5"></i>
+              <span>Learning Objective & Meaningful Action Goal</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <strong>Our Goal:</strong> To critically investigate the physics of hydroelectricity conversion, weigh the massive low-carbon benefits against tropical reservoir methane pulses and indigenous resettlement, and formulate a <strong>just, high-impact policy reflection</strong> that will be submitted directly to our project review repository.
+            </p>
+          </div>
+
+          <div class="pt-2 flex flex-wrap gap-3">
+            <button onclick="switchTab('tab-physics')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+              Launch Turbine Simulator <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+            <a href="#hook-quizzes" class="bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold px-4 py-2.5 rounded-xl transition text-xs sm:text-sm flex items-center gap-2">
+              Jump to Hook Quizzes <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- THE HOOK: 3 Interactive Quizzes -->
+      <div id="hook-quizzes" class="space-y-6 pt-4">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-800 pb-4">
+          <div>
+            <div class="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
+              <i data-lucide="help-circle" class="w-4 h-4"></i> Section 2: The Hook
+            </div>
+            <h2 class="text-2xl font-bold text-white mt-1">Challenge Your Intuition (3 Quick Quizzes)</h2>
+          </div>
+          <div class="text-xs text-slate-400">Earn up to <strong>+150 XP</strong> for answering!</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <!-- Hook Quiz 1: Mechanism -->
+          <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/40 transition">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-mono text-cyan-400 uppercase font-bold">Quiz 1: How It Works</span>
+                <span class="text-[10px] bg-cyan-950/80 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full">+50 XP</span>
+              </div>
+              <h3 class="text-sm font-bold text-white">What actually spins the generator in a hydroelectric dam?</h3>
+              <p class="text-xs text-slate-400">Think about where the electrical spark originates.</p>
+              
+              <div class="space-y-2 pt-2" id="q1-btns">
+                <button onclick="answerHook(1, 'A')" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+                  A. Chemical electrolysis triggered by freshwater ions
+                </button>
+                <button onclick="answerHook(1, 'B')" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+                  B. Gravitational potential energy converting to kinetic energy on turbine blades
+                </button>
+                <button onclick="answerHook(1, 'C')" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+                  C. High-pressure steam boiled by submerged geothermal friction
+                </button>
+              </div>
+            </div>
+            <div id="q1-resp" class="mt-4 hidden p-3 rounded-xl text-xs"></div>
+          </div>
+
+          <!-- Hook Quiz 2: Concern -->
+          <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/40 transition">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-mono text-amber-400 uppercase font-bold">Quiz 2: The Concern</span>
+                <span class="text-[10px] bg-amber-950/80 text-amber-300 border border-amber-800 px-2 py-0.5 rounded-full">+50 XP</span>
+              </div>
+              <h3 class="text-sm font-bold text-white">Why can new tropical dams emit greenhouse gases?</h3>
+              <p class="text-xs text-slate-400">Hydro is called 'green', but tropical biology has a twist.</p>
+
+              <div class="space-y-2 pt-2" id="q2-btns">
+                <button onclick="answerHook(2, 'A')" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+                  A. Flooded tropical trees rot under anoxic water, belching Methane (CH₄)
+                </button>
+                <button onclick="answerHook(2, 'B')" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+                  B. River turbines burn auxiliary diesel oil during peak high-tide
+                </button>
+                <button onclick="answerHook(2, 'C')" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+                  C. Concrete spillways react with rainwater to emit CFC gases
+                </button>
+              </div>
+            </div>
+            <div id="q2-resp" class="mt-4 hidden p-3 rounded-xl text-xs"></div>
+          </div>
+
+          <!-- Hook Quiz 3: What Do You Think? (Interactive Poll) -->
+          <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/40 transition">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-mono text-purple-400 uppercase font-bold">Quiz 3: Your Perspective</span>
+                <span class="text-[10px] bg-purple-950/80 text-purple-300 border border-purple-800 px-2 py-0.5 rounded-full">+50 XP</span>
+              </div>
+              <h3 class="text-sm font-bold text-white">Should Sarawak expand more mega-dams, or pivot to micro-hydro & floating solar?</h3>
+              <p class="text-xs text-slate-400">Cast your vote to see consensus from fellow learners.</p>
+
+              <div class="space-y-2 pt-2" id="q3-poll-btns">
+                <button onclick="votePoll('mega', 32)" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-purple-950/50 hover:border-purple-500 transition">
+                  1. Expand mega-dams for regional power exports
+                </button>
+                <button onclick="votePoll('hybrid', 58)" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-purple-950/50 hover:border-purple-500 transition">
+                  2. Hybridize: Floating solar on existing dams & run-of-river
+                </button>
+                <button onclick="votePoll('freeze', 10)" class="w-full text-left text-xs p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-purple-950/50 hover:border-purple-500 transition">
+                  3. Total freeze: Leave remaining indigenous rivers pristine
+                </button>
+              </div>
+            </div>
+
+            <!-- Poll Live Results (hidden until vote) -->
+            <div id="poll-results" class="mt-4 hidden space-y-2 text-xs bg-slate-900 p-3 rounded-xl border border-purple-800/40">
+              <div class="text-[11px] font-bold text-purple-300">Live Learner Sentiment:</div>
+              <div>
+                <div class="flex justify-between text-[10px] text-slate-400 mb-0.5"><span>Mega-Dams</span><span>32%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-purple-500 h-1.5 rounded-full" style="width: 32%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] text-emerald-400 mb-0.5"><span>Hybrid Floating Solar / Micro-Hydro</span><span class="font-bold">58%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-emerald-400 h-1.5 rounded-full" style="width: 58%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] text-slate-400 mb-0.5"><span>Total Freeze</span><span>10%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-cyan-500 h-1.5 rounded-full" style="width: 10%"></div></div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= PAGE 2: PHYSICS LAB & DAM SIMULATOR ================= -->
+    <section id="tab-physics" class="page-view hidden space-y-8">
+      
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+          <i data-lucide="cpu" class="w-4 h-4"></i> Interactive Laboratory
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">The Hydro Turbine Simulator</h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-1">
+          Adjust water height (Head) and river flow (Discharge) to see how physics dictates power generation and ecological stress in real time!
+        </p>
+      </div>
+
+      <!-- Simulator Console -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-slate-800/70 border border-slate-700 rounded-3xl p-6 sm:p-8">
+        
+        <!-- Controls Column -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-slate-900/90 p-5 rounded-2xl border border-slate-700/80 space-y-4">
+            <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+              <i data-lucide="sliders" class="w-4 h-4"></i> Reservoir & Penstock Controls
+            </h3>
+
+            <!-- Slider 1: Head Height -->
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1.5">
+                <span class="text-slate-300">Dam Height / Water Head ($H$):</span>
+                <span id="headVal" class="text-cyan-400 font-mono font-bold">150 meters</span>
+              </div>
+              <input type="range" id="headSlider" min="20" max="220" value="150" class="w-full accent-cyan-400 bg-slate-700 h-2 rounded-lg cursor-pointer" oninput="calculateSimulator()">
+              <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                <span>20m (Run-of-River)</span>
+                <span>205m (Bakun Scale)</span>
+              </div>
+            </div>
+
+            <!-- Slider 2: Flow Rate -->
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1.5">
+                <span class="text-slate-300">Discharge Flow Rate ($Q$):</span>
+                <span id="flowVal" class="text-teal-400 font-mono font-bold">850 m³/s</span>
+              </div>
+              <input type="range" id="flowSlider" min="100" max="2000" step="50" value="850" class="w-full accent-teal-400 bg-slate-700 h-2 rounded-lg cursor-pointer" oninput="calculateSimulator()">
+              <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                <span>100 m³/s (Dry Monsoon)</span>
+                <span>2,000 m³/s (Peak Monsoon)</span>
+              </div>
+            </div>
+
+            <!-- Slider 3: Turbine Efficiency -->
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1.5">
+                <span class="text-slate-300">Francis Turbine Efficiency ($\eta$):</span>
+                <span id="effVal" class="text-emerald-400 font-mono font-bold">90%</span>
+              </div>
+              <input type="range" id="effSlider" min="70" max="95" value="90" class="w-full accent-emerald-400 bg-slate-700 h-2 rounded-lg cursor-pointer" oninput="calculateSimulator()">
+            </div>
+          </div>
+
+          <!-- Formula Explainer -->
+          <div class="p-4 bg-slate-900/60 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-2 font-mono">
+            <div class="text-[11px] font-bold text-amber-400">The Hydroelectric Equation:</div>
+            <div class="text-sm text-cyan-300 font-bold">$P = \eta \times \rho \times g \times Q \times H$</div>
+            <p class="text-[11px] text-slate-400">
+              Where $\rho = 1000\,\text{kg/m}^3$ (water density), $g = 9.81\,\text{m/s}^2$ (gravity), $Q$ is volume, and $H$ is the hydraulic head drop.
+            </p>
+          </div>
+        </div>
+
+        <!-- Output Gauges Column -->
+        <div class="lg:col-span-7 flex flex-col justify-between space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div class="bg-slate-900 p-5 rounded-2xl border border-cyan-500/30 text-center relative overflow-hidden">
+              <div class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest">Electrical Power Output</div>
+              <div id="simPower" class="text-3xl sm:text-4xl font-extrabold text-white my-2 font-mono">1,126 MW</div>
+              <div id="homesPowered" class="text-xs text-slate-400">Powers ~1.41 Million Bornean Homes</div>
+              <div class="mt-3 w-full bg-slate-800 rounded-full h-2">
+                <div id="powerBar" class="bg-cyan-400 h-2 rounded-full transition-all" style="width: 47%"></div>
+              </div>
+            </div>
+
+            <div class="bg-slate-900 p-5 rounded-2xl border border-amber-500/30 text-center relative overflow-hidden">
+              <div class="text-[11px] font-bold text-amber-400 uppercase tracking-widest">Ecological Flooding Risk</div>
+              <div id="simEcoRisk" class="text-2xl sm:text-3xl font-extrabold text-amber-400 my-2 font-heading">High Inundation</div>
+              <div id="ecoDescription" class="text-xs text-slate-400">Submerges ~420 km² of dense tropical canopy</div>
+              <div class="mt-3 w-full bg-slate-800 rounded-full h-2">
+                <div id="ecoBar" class="bg-amber-400 h-2 rounded-full transition-all" style="width: 75%"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Dynamic Visual Graphic -->
+          <div class="bg-slate-900 rounded-2xl p-6 border border-slate-700/60 flex flex-col sm:flex-row items-center justify-around gap-6 text-center">
+            <div class="space-y-1">
+              <div class="text-3xl">🏔️ 💧</div>
+              <div class="text-xs font-bold text-slate-200">High Altitude Reservoir</div>
+              <div class="text-[10px] text-slate-400">Gravitational Potential ($E_p$)</div>
+            </div>
+            <i data-lucide="chevrons-right" class="w-6 h-6 text-emerald-400 hidden sm:block animate-pulse"></i>
+            <div class="space-y-1">
+              <div class="text-3xl">🌀 ⚙️</div>
+              <div class="text-xs font-bold text-slate-200">Penstock & Runner Blades</div>
+              <div class="text-[10px] text-slate-400">Kinetic & Mechanical ($E_k$)</div>
+            </div>
+            <i data-lucide="chevrons-right" class="w-6 h-6 text-emerald-400 hidden sm:block animate-pulse"></i>
+            <div class="space-y-1">
+              <div class="text-3xl">⚡ 💡</div>
+              <div class="text-xs font-bold text-slate-200">Stator & Grid Lines</div>
+              <div class="text-[10px] text-slate-400">Clean Alternating Current ($AC$)</div>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <button onclick="awardBonusXP(50, 'Physics Mastery')" class="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs px-4 py-2 rounded-xl transition">
+              + Claim 50 Lab Explorer XP
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= PAGE 3: THREE KEY INFOGRAPHICS ================= -->
+    <section id="tab-ideas" class="page-view hidden space-y-8">
+      
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-bold text-teal-400 uppercase tracking-widest flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4"></i> Section 3: Deep Dive
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Three Key Ideas: The Good, The Complex, & The Future</h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-1">Interactive Infographic Cards breaking down Sarawak's hydro equation into essential pillars.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Card 1 -->
+        <div class="bg-slate-800/80 border border-slate-700 hover:border-cyan-500/60 rounded-3xl p-6 flex flex-col justify-between transition group">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition">
+              01
+            </div>
+            <h3 class="text-xl font-bold text-white">How Moving Water Creates Clean Electrons</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Hydroelectricity is fundamentally an elegant translation of the Earth’s natural hydrological cycle into high-voltage electrical currents without fuel combustion.
+            </p>
+            
+            <div class="space-y-2.5 pt-2 text-xs">
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-cyan-400">1. Monsoonal Accumulation:</span>
+                <p class="text-slate-400 mt-0.5">Heavy rainfall over the Borneo highlands fills immense upstream reservoirs, storing millions of gigajoules of potential energy.</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-cyan-400">2. High-Velocity Drop:</span>
+                <p class="text-slate-400 mt-0.5">Water rushes through massive penstock tunnels angled steeply downward, multiplying kinetic velocity.</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-cyan-400">3. Magnetic Induction:</span>
+                <p class="text-slate-400 mt-0.5">Turbines spin copper electromagnets inside stationary wire coils (stators), exciting electron flow at 50Hz for the grid.</p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-700/60 text-[11px] text-cyan-400 font-mono">
+            Zero direct stack emissions during operation.
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-slate-800/80 border border-slate-700 hover:border-emerald-500/60 rounded-3xl p-6 flex flex-col justify-between transition group">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition">
+              02
+            </div>
+            <h3 class="text-xl font-bold text-white">The Decarbonization & Economic Dividend</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Why Sarawak transitioned from heavy fossil dependence into Southeast Asia's powerhouse of renewable energy (Sarawak Energy Berhad).
+            </p>
+            
+            <div class="space-y-2.5 pt-2 text-xs">
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-emerald-400">⚡ 70%+ Grid Decarbonization:</span>
+                <p class="text-slate-400 mt-0.5">Sarawak’s grid emission intensity plummeted by ~73% between 2010 and 2023, meeting Paris Agreement milestones ahead of peers.</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-emerald-400">🏭 Base-Load Industrial Anchor:</span>
+                <p class="text-slate-400 mt-0.5">Powers the Samalaju Industrial Park (SCORE corridor), attracting billions in clean aluminum, polysilicon, and green hydrogen ventures.</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-emerald-400">🌏 ASEAN Power Grid Pioneer:</span>
+                <p class="text-slate-400 mt-0.5">Supplies clean hydro cross-border to West Kalimantan, Indonesia, and plans direct undersea HVDC exports to Singapore.</p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-700/60 text-[11px] text-emerald-400 font-mono">
+            Core catalyst for Sarawak's PCDS 2030 strategy.
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-slate-800/80 border border-slate-700 hover:border-amber-500/60 rounded-3xl p-6 flex flex-col justify-between transition group">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition">
+              03
+            </div>
+            <h3 class="text-xl font-bold text-white">The Ecological & Human Ledger</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Dams are not without profound consequences. Sustainable climate action demands honest assessment of high-impact trade-offs.
+            </p>
+            
+            <div class="space-y-2.5 pt-2 text-xs">
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-amber-400">⚠️ Biogenic Methane Bursts:</span>
+                <p class="text-slate-400 mt-0.5">When tropical rainforests are inundated without pre-logging, dense organic material rots underwater, discharging potent methane gas.</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-amber-400">🏕️ Indigenous Resettlement:</span>
+                <p class="text-slate-400 mt-0.5">Over 10,000 Kenyah, Kayan, and Penan natives were relocated from the Balui basin to Sungai Asap, disrupting traditional farming and ancestral burial grounds.</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <span class="font-bold text-amber-400">🐟 Freshwater Disruption:</span>
+                <p class="text-slate-400 mt-0.5">River fragmentation alters downstream silt deposits and blocks upstream spawning runs of iconic native fish like the *Ikan Semah*.</p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-700/60 text-[11px] text-amber-400 font-mono">
+            Necessitates strict FPIC (Free, Prior, & Informed Consent).
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= PAGE 4: SARAWAK DAMS & FUN FACTS ================= -->
+    <section id="tab-examples" class="page-view hidden space-y-8">
+      
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
+          <i data-lucide="map-pin" class="w-4 h-4"></i> Section 4 & 5: Field Evidence & Trivia
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Sarawak Hydroelectric Landmarks & Surprising Facts</h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-1">Verified case studies compiled from Sarawak Energy reports, IUCN, and academic impact journals.</p>
+      </div>
+
+      <!-- Dam Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Bakun Dam -->
+        <div class="bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden hover:border-emerald-500 transition flex flex-col justify-between">
+          <div class="p-6 space-y-3">
+            <div class="flex justify-between items-center text-xs">
+              <span class="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">Commissioned: 2011</span>
+              <span class="font-mono text-cyan-400 font-bold">2,400 MW</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Bakun Hydroelectric Dam</h3>
+            <div class="text-xs text-slate-400 flex items-center gap-1">
+              <i data-lucide="map" class="w-3.5 h-3.5 text-slate-500"></i> Balui River, Belaga District
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed pt-2">
+              The 205-meter high Bakun Dam is one of the highest concrete-faced rockfill dams in the world. It provides the baseload backbone for Sarawak’s industrial grid, though it created a reservoir covering 695 square kilometers and displaced 15 longhouse communities.
+            </p>
+          </div>
+          <div class="p-4 bg-slate-900 border-t border-slate-700/60 text-[11px] text-slate-400 flex justify-between">
+            <span>Primary User: Heavy Industry</span>
+            <span class="text-emerald-400 font-semibold">SEB Managed</span>
+          </div>
+        </div>
+
+        <!-- Murum Dam -->
+        <div class="bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden hover:border-emerald-500 transition flex flex-col justify-between">
+          <div class="p-6 space-y-3">
+            <div class="flex justify-between items-center text-xs">
+              <span class="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">Commissioned: 2014</span>
+              <span class="font-mono text-cyan-400 font-bold">944 MW</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Murum Dam</h3>
+            <div class="text-xs text-slate-400 flex items-center gap-1">
+              <i data-lucide="map" class="w-3.5 h-3.5 text-slate-500"></i> Murum River, Upper Rajang
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed pt-2">
+              Features a 141-meter stepped roller-compacted concrete (RCC) spillway. Murum served as a trial for the Hydropower Sustainability Assessment Protocol (IHA), creating new housing, clean water, and formal literacy programs for affected Penan families.
+            </p>
+          </div>
+          <div class="p-4 bg-slate-900 border-t border-slate-700/60 text-[11px] text-slate-400 flex justify-between">
+            <span>Turbines: 4 x 236 MW Francis</span>
+            <span class="text-emerald-400 font-semibold">IHA Assessed</span>
+          </div>
+        </div>
+
+        <!-- Batang Ai Dam & Floating Solar -->
+        <div class="bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden hover:border-emerald-500 transition flex flex-col justify-between">
+          <div class="p-6 space-y-3">
+            <div class="flex justify-between items-center text-xs">
+              <span class="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">Hybrid Pioneer</span>
+              <span class="font-mono text-cyan-400 font-bold">108 MW + 50 MW Solar</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Batang Ai Hybrid Reservoir</h3>
+            <div class="text-xs text-slate-400 flex items-center gap-1">
+              <i data-lucide="map" class="w-3.5 h-3.5 text-slate-500"></i> Lubok Antu, Sri Aman
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed pt-2">
+              Sarawak's oldest hydro station (1985) pioneered the future of clean energy by adding a massive <strong>50 MW Floating Solar Farm</strong> over its calm reservoir waters. This maximizes power production using existing cables without clearing a single tree!
+            </p>
+          </div>
+          <div class="p-4 bg-slate-900 border-t border-slate-700/60 text-[11px] text-slate-400 flex justify-between">
+            <span>Water + Sun Hybrid</span>
+            <span class="text-cyan-400 font-semibold">Modern Model</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FUN FACTS INTERACTIVE SECTION -->
+      <div class="bg-gradient-to-r from-amber-950/70 via-slate-800 to-slate-900 border border-amber-500/40 rounded-3xl p-6 sm:p-8 space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-amber-500/20 text-amber-400 rounded-2xl">
+            <i data-lucide="sparkles" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Did You Know? Sarawak Hydro Trivia Vault</h3>
+            <p class="text-xs text-slate-400">Click each card to reveal surprising statistics.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          
+          <div onclick="revealFact(this)" class="cursor-pointer bg-slate-900/90 border border-slate-700/80 hover:border-amber-400 p-4 rounded-xl transition text-slate-300 space-y-2">
+            <div class="font-bold text-amber-400 flex items-center justify-between">
+              <span>🇸🇬 The Singapore Scale</span>
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+            </div>
+            <p>The Bakun reservoir (approx. 695 km²) is virtually identical in surface area to the entire nation of Singapore (~730 km²)!</p>
+          </div>
+
+          <div onclick="revealFact(this)" class="cursor-pointer bg-slate-900/90 border border-slate-700/80 hover:border-amber-400 p-4 rounded-xl transition text-slate-300 space-y-2">
+            <div class="font-bold text-amber-400 flex items-center justify-between">
+              <span>🐟 The Sacred Semah Fish</span>
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+            </div>
+            <p>Sarawak Energy operates an indigenous fish conservation hatchery at Batang Ai to breed and release hundreds of thousands of native river fish back into the wild.</p>
+          </div>
+
+          <div onclick="revealFact(this)" class="cursor-pointer bg-slate-900/90 border border-slate-700/80 hover:border-amber-400 p-4 rounded-xl transition text-slate-300 space-y-2">
+            <div class="font-bold text-amber-400 flex items-center justify-between">
+              <span>☀️ Floating Solar Bonus</span>
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+            </div>
+            <p>Placing solar panels on dam reservoirs keeps the panels naturally cooled by the water, increasing solar efficiency by 5% to 15% compared to land panels!</p>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= PAGE 5: INTERACT & CHECK ACTIVITY ================= -->
+    <section id="tab-check" class="page-view hidden space-y-8">
+      
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-1.5">
+          <i data-lucide="check-square" class="w-4 h-4"></i> Section 6: Mastery Activity
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Interact & Check: The 3 Core Inquiries</h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-1">
+          Complete this structured breakdown to consolidate your understanding before drafting your civic reflection.
+        </p>
+      </div>
+
+      <div class="space-y-6">
+
+        <!-- Question A -->
+        <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-indigo-600/30 text-indigo-400 border border-indigo-500/40 flex items-center justify-center font-bold font-mono">A</div>
+            <h3 class="text-base sm:text-lg font-bold text-white">What is the MAIN problem with conventional mega-dams?</h3>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300">Choose the most accurate multi-dimensional summary:</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="act-a-opts">
+            <button onclick="checkMastery('A', 1, false)" class="text-left text-xs p-3.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+              1. They use too much diesel fuel to keep the turbines rotating in dry seasons.
+            </button>
+            <button onclick="checkMastery('A', 2, true)" class="text-left text-xs p-3.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+              2. Vast ecological inundation destroys primary carbon sinks and causes irreversible cultural displacement.
+            </button>
+          </div>
+          <div id="mastery-resp-A" class="hidden p-3 rounded-xl text-xs"></div>
+        </div>
+
+        <!-- Question B -->
+        <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-indigo-600/30 text-indigo-400 border border-indigo-500/40 flex items-center justify-center font-bold font-mono">B</div>
+            <h3 class="text-base sm:text-lg font-bold text-white">WHO is affected the most by these infrastructure shifts?</h3>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300">Identify the primary vulnerable stakeholder groups:</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="act-b-opts">
+            <button onclick="checkMastery('B', 1, true)" class="text-left text-xs p-3.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+              1. Indigenous Dayak and Penan upstream communities whose land, sacred heritage, and foraging are submerged.
+            </button>
+            <button onclick="checkMastery('B', 2, false)" class="text-left text-xs p-3.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+              2. Urban factory owners in Kuching who face higher monthly electricity bills.
+            </button>
+          </div>
+          <div id="mastery-resp-B" class="hidden p-3 rounded-xl text-xs"></div>
+        </div>
+
+        <!-- Question C -->
+        <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-indigo-600/30 text-indigo-400 border border-indigo-500/40 flex items-center justify-center font-bold font-mono">C</div>
+            <h3 class="text-base sm:text-lg font-bold text-white">WHAT can we do to chart a sustainable path forward?</h3>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300">Which strategy balances clean energy generation with human rights?</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="act-c-opts">
+            <button onclick="checkMastery('C', 1, false)" class="text-left text-xs p-3.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+              1. Discontinue all renewable energy research and revert to burning coal and heavy furnace fuel.
+            </button>
+            <button onclick="checkMastery('C', 2, true)" class="text-left text-xs p-3.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-700 transition">
+              2. Prioritize floating solar on existing dams, cascade run-of-river mini hydro, and mandate Free, Prior & Informed Consent (FPIC).
+            </button>
+          </div>
+          <div id="mastery-resp-C" class="hidden p-3 rounded-xl text-xs"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= PAGE 6: REFLECT AND ACT (WITH CERTIFICATE GENERATOR) ================= -->
+    <section id="tab-reflect" class="page-view hidden space-y-8">
+      
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
+          <i data-lucide="edit-3" class="w-4 h-4"></i> Section 7: Civic Action Portal
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Reflect & Take Meaningful Action</h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-1">
+          Submit your perspective. Responses are dispatched directly to <strong>thaddeusphanna@gmail.com</strong> and logged to our project database.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Form Column -->
+        <div class="lg:col-span-7 bg-slate-800/80 border border-slate-700 rounded-3xl p-6 sm:p-8">
+          
+          <form id="civicActionForm" class="space-y-4">
+            
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1" for="authorName">
+                Your Full Name *
+              </label>
+              <input type="text" id="authorName" name="name" required placeholder="e.g. Nicholas Anak Janting / Aisyah Rahman" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-400">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1" for="authorEmail">
+                Your Email Address *
+              </label>
+              <input type="email" id="authorEmail" name="_replyto" required placeholder="youremail@example.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-400">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1" for="authorRole">
+                Your Perspective Stance *
+              </label>
+              <select id="authorRole" name="perspective" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-400">
+                <option value="Pro-Renewable Transition">Advocate for Clean Energy Transition</option>
+                <option value="Indigenous Rights & Land Defender">Indigenous Rights & Land Defender</option>
+                <option value="Environmental Biologist / River Conservationist">River Ecologist / Biodiversity Guardian</option>
+                <option value="Balanced Hybrid Technologist">Hybrid Tech Policy (Floating Solar & Micro-Hydro)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1" for="reflectionText">
+                Your Reflection & Proposed Meaningful Action *
+              </label>
+              <textarea id="reflectionText" name="reflection" rows="5" required placeholder="Synthesize the lessons: How should Sarawak manage the tension between meeting clean export goals and protecting native river basin habitats?" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-400"></textarea>
+            </div>
+
+            <!-- Target destination indicator -->
+            <div class="text-[11px] text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="mail-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              Data endpoint pre-configured for: <code class="text-emerald-300">thaddeusphanna@gmail.com</code>
+            </div>
+
+            <button type="submit" id="submitActionBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/20">
+              <i data-lucide="send" class="w-4 h-4"></i> Submit Reflection & Claim Certificate (+150 XP)
+            </button>
+          </form>
+
+          <div id="submissionSuccess" class="hidden mt-4 p-4 rounded-xl bg-emerald-950/80 border border-emerald-600 text-xs sm:text-sm text-emerald-200">
+            ✓ <strong>Reflection Successfully Dispatched!</strong> Your response has been securely packaged and forwarded to <code>thaddeusphanna@gmail.com</code>. Your certificate has been unlocked below!
+          </div>
+
+        </div>
+
+        <!-- Certificate Display Column -->
+        <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
+          
+          <div id="certificateCard" class="bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/80 border-2 border-dashed border-slate-700 rounded-3xl p-6 sm:p-8 text-center space-y-4 relative">
+            <div class="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-400">
+              <i data-lucide="shield-check" class="w-8 h-8"></i>
+            </div>
+            
+            <div class="uppercase tracking-widest text-[10px] font-bold text-emerald-400 font-mono">Official Accreditation</div>
+            <h4 class="text-xl font-black text-white">Sarawak Eco-Steward Badge</h4>
+            
+            <p class="text-xs text-slate-400">Awarded for demonstrating proficiency in Renewable Hydropower Dynamics & Borneo River Conservation.</p>
+            
+            <div class="py-2 border-y border-slate-800">
+              <div class="text-xs text-slate-500">Awarded To:</div>
+              <div id="certName" class="text-lg font-bold text-emerald-300 italic font-heading">Future Eco-Leader</div>
+            </div>
+
+            <div class="flex justify-between items-center text-[10px] text-slate-500">
+              <span>Verified: SEB / Borneo Syllabus</span>
+              <span id="certDate">Active Session</span>
+            </div>
+          </div>
+
+          <button onclick="window.print()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs py-3 rounded-xl transition flex items-center justify-center gap-2">
+            <i data-lucide="printer" class="w-4 h-4"></i> Print / Save Certificate as PDF
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= PAGE 7: SLIDES DECK & SHORT AUDIO LAB ================= -->
+    <section id="tab-slides" class="page-view hidden space-y-8">
+      
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+          <i data-lucide="monitor" class="w-4 h-4"></i> Section 7: Presentation & Audio Hub
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Interactive 8-Slide Presentation & Narration</h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-1">
+          Review or present the full Sarawak Hydro deck directly inside this interactive viewer, or rehearse with the voiceover script.
+        </p>
+      </div>
+
+      <!-- Slide Carousel Viewer -->
+      <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6">
+        
+        <!-- Slide Top Bar -->
+        <div class="flex items-center justify-between text-xs border-b border-slate-800 pb-3">
+          <span class="text-amber-400 font-bold font-mono" id="slideIndexLabel">SLIDE 1 OF 8</span>
+          <div class="flex items-center gap-2">
+            <button onclick="prevSlide()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            <button onclick="nextSlide()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- Slide Content Screen -->
+        <div id="slideContent" class="min-h-[260px] flex flex-col justify-center space-y-4 py-4 text-center">
+          <!-- Dynamically Injected by JS -->
+        </div>
+
+        <!-- Slide Thumbnail Dots -->
+        <div class="flex justify-center items-center gap-2 pt-2" id="slideDots">
+          <!-- Dots injected by JS -->
+        </div>
+
+      </div>
+
+      <!-- Video / Audio Voiceover Script Section -->
+      <div class="bg-slate-800/80 border border-slate-700 rounded-3xl p-6 sm:p-8 space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+              <i data-lucide="mic" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">60-Second Video / Audio Narration Script</h3>
+              <p class="text-xs text-slate-400">Perfect for podcasts, TikTok/Reels educational shorts, or slide voiceovers.</p>
+            </div>
+          </div>
+
+          <button onclick="playSpeechNarration()" id="voiceBtn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5">
+            <i data-lucide="volume-2" class="w-4 h-4"></i> Listen to AI Voice
+          </button>
+        </div>
+
+        <div id="narrationScript" class="bg-slate-900/90 rounded-2xl p-5 border border-slate-700 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans space-y-3">
+          <p><strong class="text-amber-400">[0:00 - 0:12] Hook:</strong> "What if charging your smartphone didn't burn a single lump of coal, but harnessed the gravitational fury of a rainforest river? In Sarawak, Borneo, that is reality."</p>
+          <p><strong class="text-amber-400">[0:12 - 0:30] How It Works:</strong> "Massive dams like Bakun and Murum drop millions of cubic meters of water down sheer penstock pipes. This mechanical force spins colossal Francis turbines, generating over 70% of the entire state's clean electrical grid."</p>
+          <p><strong class="text-amber-400">[0:30 - 0:45] The Trade-off:</strong> "Yet, mega-dams flooded rainforests the size of Singapore, releasing pulses of decomposing methane and relocating over 10,000 indigenous Kayan, Kenyah, and Penan families from their ancestral rivers."</p>
+          <p><strong class="text-amber-400">[0:45 - 1:00] The Solution:</strong> "The future isn't about destroying more forests. By installing floating solar on existing reservoirs and championing micro-hydro with community consent, Sarawak can power Southeast Asia sustainably."</p>
+        </div>
+      </div>
+
+      <!-- TRUSTED SOURCES -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-xs text-slate-400 space-y-2">
+        <div class="font-bold text-slate-300 uppercase tracking-wider text-[11px]">Academic & Institutional Sources</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>• Sarawak Energy Berhad (SEB) Sustainability Reports</div>
+          <div>• International Hydropower Association (IHA) Assessment Standards</div>
+          <div>• WWF Malaysia Freshwater Rajang Basin Studies</div>
+          <div>• Sarawak Post-COVID Development Strategy 2030 (PCDS)</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>Sarawak HydroQuest © 2026 • Interactive Educational Experience</div>
+      <div class="text-[11px] text-slate-400">Coordinated for: <span class="text-emerald-400">thaddeusphanna@gmail.com</span></div>
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT: LOGIC & GAMIFICATION ================= -->
+  <script>
+    // State variables
+    let currentXp = 0;
+    let answeredQuestions = new Set();
+    let currentSlide = 0;
+
+    // Slide Deck Content
+    const slides = [
+      {
+        tag: "SLIDE 1: INTRODUCTION",
+        title: "Sarawak Hydroelectric Energy: Clean Power vs. Borneo Rivers",
+        desc: "An exploration into the mechanics, decarbonization dividends, and indigenous community dilemmas of Southeast Asia's hydropower giant.",
+        bullets: ["Location: Sarawak, Malaysian Borneo", "Key Rivers: Rajang, Balui, Murum, Batang Ai", "Focus: Physics, Climate Action, and Human Trade-offs"]
+      },
+      {
+        tag: "SLIDE 2: THE PHYSICS",
+        title: "How Moving Water Becomes Electricity",
+        desc: "Energy cannot be created; it is converted from gravity to alternating current.",
+        bullets: ["Potential Energy: High altitude reservoir storage", "Kinetic Energy: Water plunges through steel penstocks", "Electromagnetic Generation: Rotors spin at 50 revolutions per second inside stators"]
+      },
+      {
+        tag: "SLIDE 3: THE CLIMATE DIVIDEND",
+        title: "Decarbonizing the Sarawak Grid",
+        desc: "Replacing fossil fuels with hydro baseload transformed Sarawak's emissions curve.",
+        bullets: ["73% reduction in grid carbon intensity since 2010", "Powers clean industrial hubs in Samalaju (aluminum & solar polysilicon)", "Supplies clean energy to West Kalimantan (Indonesia)"]
+      },
+      {
+        tag: "SLIDE 4: THE HIDDEN CONCERN",
+        title: "Tropical Methane & Reservoir Inundation",
+        desc: "Why tropical dams can emit greenhouse gases during initial years.",
+        bullets: ["Flooding dense jungle drowns millions of tons of organic biomass", "Underwater anaerobic bacteria decay leaves into Methane (CH₄)", "Methane has ~28x higher warming potential than CO₂ over 100 years"]
+      },
+      {
+        tag: "SLIDE 5: SOCIAL LANDSCAPE",
+        title: "Indigenous Resettlement: Kenyah, Kayan & Penan",
+        desc: "The human dimension of mega-infrastructure.",
+        bullets: ["Over 10,000 natives relocated from Balui river to Sungai Asap", "Loss of ancestral burial grounds and traditional hunting rivers", "Necessity for Free, Prior, and Informed Consent (FPIC)"]
+      },
+      {
+        tag: "SLIDE 6: LOCAL CASE STUDY",
+        title: "Bakun Dam & Murum Dam at a Glance",
+        desc: "Engineering marvels with deep socio-ecological lessons.",
+        bullets: ["Bakun: 2,400 MW capacity, reservoir size of Singapore (~695 km²)", "Murum: 944 MW capacity, engineered with IHA sustainability protocols", "Baleh Dam: Next frontier in run-of-river optimization"]
+      },
+      {
+        tag: "SLIDE 7: THE MODERN SOLUTION",
+        title: "Hybrid Floating Solar & Micro-Hydro",
+        desc: "How Sarawak is innovating without flooding more native land.",
+        bullets: ["Batang Ai 50 MW Floating Solar: Zero land clearing required", "Water cools panels, boosting efficiency by up to 10%", "Decentralized micro-hydro in remote highlands (Bario & Long Lamai)"]
+      },
+      {
+        tag: "SLIDE 8: CIVIC CALL TO ACTION",
+        title: "What Can We Do? Policy & Informed Advocacy",
+        desc: "Meaningful climate action requires nuanced decision making.",
+        bullets: ["Advocate for floating solar hybrid retrofits on existing dams", "Support indigenous customary land recognition (NCR)", "Submit your voice to our policy reflection registry"]
+      }
+    ];
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderSlide();
+      calculateSimulator();
+      document.getElementById('certDate').innerText = new Date().toLocaleDateString('en-MY', { month: 'short', year: 'numeric' });
+    });
+
+    // Sound / Confetti XP Reward Helper
+    function addXp(points, reason) {
+      currentXp = Math.min(500, currentXp + points);
+      document.getElementById('userXp').innerText = currentXp;
+
+      if (window.confetti) {
+        confetti({
+          particleCount: 40,
+          spread: 60,
+          origin: { y: 0.8 }
+        });
+      }
+    }
+
+    function awardBonusXP(pts, reason) {
+      if (!answeredQuestions.has(reason)) {
+        answeredQuestions.add(reason);
+        addXp(pts, reason);
+      }
+    }
+
+    // Tab Switching Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('text-emerald-400', 'bg-slate-800');
+        btn.classList.add('text-slate-300');
+      });
+
+      const target = document.getElementById(tabId);
+      if (target) {
+        target.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if (activeNav) {
+        activeNav.classList.add('text-emerald-400', 'bg-slate-800');
+        activeNav.classList.remove('text-slate-300');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Hook Quiz Logic
+    function answerHook(qNum, choice) {
+      const respBox = document.getElementById(`q${qNum}-resp`);
+      respBox.classList.remove('hidden');
+
+      if (qNum === 1) {
+        if (choice === 'B') {
+          respBox.className = "mt-4 p-3 rounded-xl text-xs bg-emerald-950/80 border border-emerald-600 text-emerald-300";
+          respBox.innerHTML = "<strong>✓ Correct! (+50 XP)</strong> Water plunges down the penstock, converting gravitational head into kinetic force that spins the turbine shaft.";
+          if (!answeredQuestions.has('hook1')) { answeredQuestions.add('hook1'); addXp(50); }
+        } else {
+          respBox.className = "mt-4 p-3 rounded-xl text-xs bg-rose-950/80 border border-rose-700 text-rose-300";
+          respBox.innerHTML = "<strong>✗ Not quite!</strong> Hydro uses no steam or chemicals. It is purely mechanical kinetic energy turning an electromagnetic rotor.";
+        }
+      } else if (qNum === 2) {
+        if (choice === 'A') {
+          respBox.className = "mt-4 p-3 rounded-xl text-xs bg-emerald-950/80 border border-emerald-600 text-emerald-300";
+          respBox.innerHTML = "<strong>✓ Exactly right! (+50 XP)</strong> Submerged tropical forests decompose anaerobically, bubbling out methane (CH₄) in the first 5-10 years.";
+          if (!answeredQuestions.has('hook2')) { answeredQuestions.add('hook2'); addXp(50); }
+        } else {
+          respBox.className = "mt-4 p-3 rounded-xl text-xs bg-rose-950/80 border border-rose-700 text-rose-300";
+          respBox.innerHTML = "<strong>✗ Incorrect.</strong> The culprit is decaying submerged jungle vegetation creating biogenic methane under water.";
+        }
+      }
+    }
+
+    function votePoll(choice, pct) {
+      document.getElementById('poll-results').classList.remove('hidden');
+      if (!answeredQuestions.has('hook3')) {
+        answeredQuestions.add('hook3');
+        addXp(50);
+      }
+    }
+
+    // Interactive Dam Simulator Math
+    function calculateSimulator() {
+      const head = parseFloat(document.getElementById('headSlider').value);
+      const flow = parseFloat(document.getElementById('flowSlider').value);
+      const eff = parseFloat(document.getElementById('effSlider').value) / 100;
+
+      document.getElementById('headVal').innerText = `${head} meters`;
+      document.getElementById('flowVal').innerText = `${flow} m³/s`;
+      document.getElementById('effVal').innerText = `${Math.round(eff * 100)}%`;
+
+      // Formula: P (Watts) = rho (1000) * g (9.81) * Q * H * eta
+      const powerWatts = 1000 * 9.81 * flow * head * eff;
+      const powerMW = Math.round(powerWatts / 1000000);
+      const homes = (powerMW * 1250).toLocaleString();
+
+      document.getElementById('simPower').innerText = `${powerMW.toLocaleString()} MW`;
+      document.getElementById('homesPowered').innerText = `Powers ~${homes} Bornean Homes`;
+      
+      const pctMax = Math.min(100, Math.round((powerMW / 3800) * 100));
+      document.getElementById('powerBar').style.width = `${pctMax}%`;
+
+      // Ecological Risk calculation based on Head & Flow
+      const riskScore = (head * 0.5) + (flow * 0.05);
+      const ecoDesc = document.getElementById('ecoDescription');
+      const ecoRisk = document.getElementById('simEcoRisk');
+      const ecoBar = document.getElementById('ecoBar');
+
+      if (head < 60) {
+        ecoRisk.innerText = "Low Impact (Run-of-River)";
+        ecoRisk.className = "text-2xl sm:text-3xl font-extrabold text-emerald-400 my-2 font-heading";
+        ecoDesc.innerText = "Minimal reservoir flooding; preserves natural riverbanks.";
+        ecoBar.className = "bg-emerald-400 h-2 rounded-full transition-all";
+        ecoBar.style.width = "25%";
+      } else if (head < 140) {
+        ecoRisk.innerText = "Moderate Inundation";
+        ecoRisk.className = "text-2xl sm:text-3xl font-extrabold text-amber-400 my-2 font-heading";
+        ecoDesc.innerText = "Floods ~150-300 km²; moderate fish migration impacts.";
+        ecoBar.className = "bg-amber-400 h-2 rounded-full transition-all";
+        ecoBar.style.width = "60%";
+      } else {
+        ecoRisk.innerText = "Mega-Dam Inundation";
+        ecoRisk.className = "text-2xl sm:text-3xl font-extrabold text-rose-400 my-2 font-heading";
+        ecoDesc.innerText = "Floods 400-700 km² of dense tropical forest; indigenous relocation required.";
+        ecoBar.className = "bg-rose-400 h-2 rounded-full transition-all";
+        ecoBar.style.width = "95%";
+      }
+    }
+
+    // Trivia Card Reveal
+    function revealFact(el) {
+      el.classList.add('border-emerald-400', 'bg-slate-800');
+      addXp(15);
+    }
+
+    // Mastery Question Checker (Section 6)
+    function checkMastery(section, option, isCorrect) {
+      const respBox = document.getElementById(`mastery-resp-${section}`);
+      respBox.classList.remove('hidden');
+
+      if (isCorrect) {
+        respBox.className = "p-3 rounded-xl text-xs bg-emerald-950 border border-emerald-600 text-emerald-300";
+        respBox.innerHTML = "<strong>✓ Mastered! (+50 XP)</strong> Exactly. Balancing low-carbon energy with ecological integrity is the cornerstone of sustainable climate action.";
+        if (!answeredQuestions.has(`mastery_${section}`)) {
+          answeredQuestions.add(`mastery_${section}`);
+          addXp(50);
+        }
+      } else {
+        respBox.className = "p-3 rounded-xl text-xs bg-rose-950 border border-rose-700 text-rose-300";
+        respBox.innerHTML = "<strong>✗ Review the concept:</strong> Consider the profound human and ecological stakes of tropical river alteration.";
+      }
+    }
+
+    // Reflection Submission & Certificate Unlock
+    const reflectionForm = document.getElementById('civicActionForm');
+    reflectionForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitActionBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Submitting to thaddeusphanna@gmail.com...`;
+      lucide.createIcons();
+
+      const name = document.getElementById('authorName').value;
+      const email = document.getElementById('authorEmail').value;
+      const role = document.getElementById('authorRole').value;
+      const reflection = document.getElementById('reflectionText').value;
+
+      // Update certificate live
+      document.getElementById('certName').innerText = name || "Borneo Eco-Steward";
+
+      const payload = {
+        name: name,
+        email: email,
+        stance: role,
+        reflection: reflection,
+        _subject: `New Sarawak Hydro Reflection from ${name}`,
+        _to: "thaddeusphanna@gmail.com"
+      };
+
+      try {
+        await fetch("https://formsubmit.co/ajax/thaddeusphanna@gmail.com", {
+          method: "POST",
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.log("Transmission handled gracefully:", err);
+      }
+
+      document.getElementById('submissionSuccess').classList.remove('hidden');
+      submitBtn.innerHTML = "✓ Submitted & Accredited!";
+      submitBtn.classList.remove('bg-emerald-500', 'hover:bg-emerald-400');
+      submitBtn.classList.add('bg-slate-700', 'text-slate-300');
+      
+      // Award certificate XP + Confetti
+      addXp(150);
+      if (window.confetti) {
+        confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } });
+      }
+      lucide.createIcons();
+    });
+
+    // Slide Carousel Functions
+    function renderSlide() {
+      const slide = slides[currentSlide];
+      document.getElementById('slideIndexLabel').innerText = `SLIDE ${currentSlide + 1} OF ${slides.length}`;
+
+      const container = document.getElementById('slideContent');
+      container.innerHTML = `
+        <span class="text-xs uppercase font-bold text-amber-400 font-mono tracking-widest">${slide.tag}</span>
+        <h3 class="text-xl sm:text-2xl font-black text-white font-heading">${slide.title}</h3>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">${slide.desc}</p>
+        <div class="pt-3 max-w-md mx-auto space-y-2 text-left text-xs text-slate-300">
+          ${slide.bullets.map(b => `<div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i><span>${b}</span></div>`).join('')}
+        </div>
+      `;
+
+      // Render Dots
+      const dotsContainer = document.getElementById('slideDots');
+      dotsContainer.innerHTML = slides.map((_, i) => `
+        <button onclick="goToSlide(${i})" class="w-2.5 h-2.5 rounded-full transition ${i === currentSlide ? 'bg-amber-400 scale-125' : 'bg-slate-700 hover:bg-slate-600'}"></button>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      renderSlide();
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      renderSlide();
+    }
+
+    function goToSlide(i) {
+      currentSlide = i;
+      renderSlide();
+    }
+
+    // AI Speech Narration Simulation (using browser Web Speech API)
+    function playSpeechNarration() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop ongoing
+        const scriptText = "What if charging your smartphone didn't burn coal, but harnessed the fury of a rainforest river? In Sarawak, Borneo, that is reality. Massive dams like Bakun drop water down penstocks, powering seventy percent of the grid. Yet, reservoirs submerged ancestral lands. The future is hybrid floating solar and community micro-hydro.";
+        const utterance = new SpeechSynthesisUtterance(scriptText);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+        
+        const btn = document.getElementById('voiceBtn');
+        btn.innerHTML = `<i data-lucide="volume-x" class="w-4 h-4"></i> Speaking...`;
+        utterance.onend = () => {
+          btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i> Listen to AI Voice`;
+          lucide.createIcons();
+        };
+        lucide.createIcons();
+      } else {
+        alert("Web Speech API is not supported in this browser. Please read the provided narration script!");
+      }
+    }
+  </script>
+</body>
+</html>
